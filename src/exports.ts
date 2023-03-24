@@ -3,33 +3,53 @@ import { Media } from "./media";
 /**
  * 录音参数
  * mimeType 保存数据格式
- * bitsPerSecond 比特率
+ * audioBitsPerSecond 比特率
  * sampleRate 采样率
  * timeslice 间隔时间(ms)
  *
  */
 interface AudioOption {
 	mimeType?: string;
-	bitsPerSecond?: number;
+	audioBitsPerSecond?: number;
 	sampleRate?: number;
 	timeslice?: number;
 }
 
 function audio(option?: AudioOption) {
-	const { mimeType, bitsPerSecond, sampleRate, timeslice } = option || {};
+	const { mimeType, audioBitsPerSecond, sampleRate, timeslice } = option || {};
 	const audio = new Media("audio")
 		.setMediaStreamConstraints({ audio: { sampleRate: sampleRate } })
 		.setMediaRecorderOptions({
 			mimeType: mimeType,
-			audioBitsPerSecond: bitsPerSecond,
+			audioBitsPerSecond: audioBitsPerSecond,
 		})
 		.setTimeslice(timeslice);
 
 	return audio;
 }
 
-function video() {
-	const video = new Media("video");
+interface VideoOption extends AudioOption {
+	audio?: boolean | MediaTrackConstraints;
+	videoBitsPerSecond?: number;
+}
+
+function video(option?: VideoOption) {
+	const {
+		audio,
+		mimeType,
+		audioBitsPerSecond,
+		videoBitsPerSecond,
+		sampleRate,
+		timeslice,
+	} = option || {};
+	const video = new Media("video")
+		.setMediaStreamConstraints({ video: { sampleRate: sampleRate }, audio })
+		.setMediaRecorderOptions({
+			mimeType: mimeType,
+			audioBitsPerSecond: audioBitsPerSecond,
+			videoBitsPerSecond: videoBitsPerSecond,
+		})
+		.setTimeslice(timeslice);
 	return video;
 }
 

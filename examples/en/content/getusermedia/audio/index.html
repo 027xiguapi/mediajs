@@ -7,6 +7,7 @@
  *  tree.
 -->
 <html>
+
 <head>
 
     <meta charset="utf-8">
@@ -30,32 +31,32 @@
 
 <body>
 
-<div id="container">
+    <div id="container">
 
-    <h1><a href="//webrtc.github.io/samples/" title="WebRTC samples homepage">WebRTC samples</a> <span>getUserMedia, audio only</span>
-    </h1>
+        <h1><a href="//webrtc.github.io/samples/" title="WebRTC samples homepage">WebRTC samples</a> <span>getUserMedia,
+                audio only</span>
+        </h1>
 
-    <audio id="gum-local" controls autoplay></audio>
+        <audio id="gum-local" controls autoplay></audio>
 
-    <p class="warning">Warning: if you're not using headphones, pressing play will cause feedback.</p>
+        <p class="warning">Warning: if you're not using headphones, pressing play will cause feedback.</p>
 
-    <p>Render the audio stream from an audio-only <code>getUserMedia()</code> call with an audio element.</p>
+        <p>Render the audio stream from an audio-only <code>getUserMedia()</code> call with an audio element.</p>
 
-    <p>The <code>MediaStream</code> object <code><em>stream</em></code> passed to the <code>getUserMedia()</code>
-        callback is in global scope, so you can inspect it from the console.</p>
-    <div>
-        <span id="errorMsg"></span>
+        <p>The <code>MediaStream</code> object <code><em>stream</em></code> passed to the <code>getUserMedia()</code>
+            callback is in global scope, so you can inspect it from the console.</p>
+        <div>
+            <span id="errorMsg"></span>
+        </div>
+
+        <a href="https://github.com/webrtc/samples/tree/gh-pages/src/content/getusermedia/audio"
+            title="View source for this page on GitHub" id="viewSource">View source on GitHub</a>
+
     </div>
-    
-    <a href="https://github.com/webrtc/samples/tree/gh-pages/src/content/getusermedia/audio"
-       title="View source for this page on GitHub" id="viewSource">View source on GitHub</a>
 
-</div>
-
-<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
-<script src="js/main.js"></script>
-
-<script src="../../../js/lib/ga.js"></script>
+    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+    <script src="js/main.js"></script>
 
 </body>
+
 </html>

@@ -13,27 +13,19 @@ export const Env = new (class {
 	readonly minSafariVersion = 605;
 
 	isAudioContextSupported(): boolean {
-		return typeof navigator.mediaDevices.getUserMedia !== "undefined";
+		return typeof AudioContext !== "undefined";
 	}
 
 	isMediaDevicesSupported(): boolean {
-		return typeof navigator.mediaDevices.getUserMedia !== "undefined";
+		return typeof navigator.mediaDevices !== "undefined";
 	}
 
 	isGetUserMediaSupported(): boolean {
 		return typeof navigator.mediaDevices.getUserMedia !== "undefined";
 	}
 
-	isScriptProcessorSupported(): boolean {
-		return typeof navigator.mediaDevices.getUserMedia !== "undefined";
-	}
-
-	isAudioWorkletSupported(): boolean {
-		return typeof navigator.mediaDevices.getUserMedia !== "undefined";
-	}
-
-	isWebRTCSupported(): boolean {
-		return typeof navigator.mediaDevices.getUserMedia !== "undefined";
+	isMediaRecorderSupported(): boolean {
+		return typeof MediaRecorder !== "undefined";
 	}
 
 	isBrowserSupported(): boolean {
@@ -66,7 +58,15 @@ export const Env = new (class {
 
 		if (browser === "chrome" && version < this.minChromeVersion) return false;
 		if (browser === "firefox" && version >= this.minFirefoxVersion) return true;
-		if (!navigator.mediaDevices.getUserMedia) return false;
+		if (
+			!(
+				this.isAudioContextSupported() &&
+				this.isMediaDevicesSupported() &&
+				this.isGetUserMediaSupported() &&
+				this.isMediaRecorderSupported()
+			)
+		)
+			return false;
 
 		return true;
 	}
@@ -76,21 +76,11 @@ export const Env = new (class {
     browser:${this.getBrowser()}
     version:${this.getVersion()}
     isIOS:${this.isIOS}
-    isWebRTCSupported:${this.isWebRTCSupported()}
+    isAudioContextSupported:${this.isAudioContextSupported()}
+	isMediaDevicesSupported:${this.isMediaDevicesSupported()}
+	isGetUserMediaSupported:${this.isGetUserMediaSupported()}
+	isMediaRecorderSupported:${this.isMediaRecorderSupported()}
     isBrowserSupported:${this.isBrowserSupported()}
     isUnifiedPlanSupported:${this.isUnifiedPlanSupported()}`;
-
-		// 	AudioContext:true
-		// webkitAudioContext:false
-		// mediaDevices:true
-		// mediaDevices.getUserMedia:true
-		// navigator.getUserMedia:true
-		// navigator.webkitGetUserMedia:true
-		// AudioContext.scriptProcessor:true
-		// AudioContext.audioWorklet:true
-		// AudioWorkletNode:true
-		// MediaRecorder:true
-		// MediaRecorder.ondataavailable:true
-		// MediaRecorder.WebM.PCM:true
 	}
 })();

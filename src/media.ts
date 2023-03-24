@@ -1,5 +1,5 @@
 import EventTarget from "./eventTarget";
-import { Env } from "./env";
+// import { Env } from "./env";
 
 // 录音、录像、录屏
 type MediaType = "audio" | "video" | "screen";
@@ -93,10 +93,12 @@ class Media extends EventTarget {
 	async setMedisStream(constraints?: MediaStreamConstraints) {
 		this.setMediaStreamConstraints(constraints);
 		const _constraints = this.getMediaStreamConstraints();
+		this.setMediaState(1);
 		try {
 			this.medisStream = await navigator.mediaDevices.getUserMedia(
 				_constraints,
 			);
+			this.setMediaState(2);
 			return this;
 		} catch (err) {
 			this.setMediaState(0);
@@ -210,36 +212,30 @@ class Media extends EventTarget {
 		return this;
 	}
 
-	isOpen() {
-		try {
-			const mediaState = this.getMediaState();
-			if (mediaState !== 2) {
-				throw new Error(
-					`the cureent mediaState is ${mediaState}, Please use open function`,
-				);
-			}
-			if (!Env.isBrowserSupported()) {
-				throw new Error(
-					`the current browser version is too low. Please upgrade your browser`,
-				);
-			}
-		} catch (err) {
-			this.emit("error", "isOpen", err);
+	isReady(type: string = "isReady"): boolean {
+		const mediaState = this.getMediaState();
+		if (mediaState === 2) {
+			return true;
+		} else {
+			const err = `the cureent mediaState is ${mediaState}, Please use open function`;
+			this.emit("error", type, err);
+			return false;
 		}
 	}
 
 	onerror(callback?: Function) {
 		callback && this.on("error", callback);
+		return this;
 	}
 
 	// 创建
 	async create() {
 		if (this.getMediaState() === 0) {
-			this.setMediaState(1);
-			await this.setMedisStream();
-			this.setMediaRecorder();
-			this.setMediaState(2);
-			this.emit("create");
+			const media = await this.setMedisStream();
+			if (media) {
+				this.setMediaRecorder();
+				this.emit("create");
+			}
 			return this;
 		} else {
 			this.emit("error", "create", `mediaState: ${this.getMediaState()}`);
@@ -248,6 +244,7 @@ class Media extends EventTarget {
 
 	oncreate(callback?: Function) {
 		callback && this.on("create", callback);
+		return this;
 	}
 
 	// 销毁
@@ -268,15 +265,17 @@ class Media extends EventTarget {
 
 	ondestroy(callback?: Function) {
 		callback && this.on("destroy", callback);
+		return this;
 	}
 
 	ondataavailable(callback?: Function) {
 		callback && this.on("dataavailable", callback);
+		return this;
 	}
 
 	// 开始
 	start(timeslice?: number) {
-		this.isOpen();
+		if (!this.isReady()) return;
 		try {
 			this.setTimeslice(timeslice);
 			timeslice = this.getTimeslice();
@@ -294,7 +293,7 @@ class Media extends EventTarget {
 	}
 
 	stop() {
-		this.isOpen();
+		if (!this.isReady()) return;
 		try {
 			this.mediaRecorder?.stop();
 			return this;
@@ -305,11 +304,12 @@ class Media extends EventTarget {
 
 	onstop(callback?: Function) {
 		callback && this.on("stop", callback);
+		return this;
 	}
 
 	// 暂停
 	pause() {
-		this.isOpen();
+		if (!this.isReady()) return;
 		try {
 			this.mediaRecorder?.pause();
 			return this;
@@ -320,11 +320,12 @@ class Media extends EventTarget {
 
 	onpause(callback?: Function) {
 		callback && this.on("pause", callback);
+		return this;
 	}
 
 	// 继续
 	resume() {
-		this.isOpen();
+		if (!this.isReady()) return;
 		try {
 			this.mediaRecorder?.resume();
 			return this;
@@ -335,10 +336,11 @@ class Media extends EventTarget {
 
 	onresume(callback?: Function) {
 		callback && this.on("resume", callback);
+		return this;
 	}
 
 	getBlob(options?: BlobPropertyBag): Blob {
-		this.isOpen();
+		if (!this.isReady()) return;
 		const { mimeType } = this.getMediaRecorderOptions();
 		if (!options) {
 			options = {
@@ -351,8 +353,8 @@ class Media extends EventTarget {
 	}
 
 	// 获取BlobUrl
-	getBlobUrl(options?: BlobPropertyBag) {
-		this.isOpen();
+	getBlobUrl(options?: BlobPropertyBag): string {
+		if (!this.isReady()) return;
 		try {
 			const blob = this.getBlob(options);
 			const mediaUrl = URL.createObjectURL(blob);
@@ -386,7 +388,11 @@ class Media extends EventTarget {
 				);
 			};
 
-			reader.readAsArrayBuffer(blob);
+			if (blob) {
+				reader.readAsArrayBuffer(blob);
+			} else {
+				_this.emit("error", "getDuration", `blob is Empty`);
+			}
 		});
 	}
 

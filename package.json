@@ -9,7 +9,7 @@
 		"video",
 		"screen"
 	],
-	"description": "MediaJS Extension",
+	"description": "MediaJS is a JavaScript library that can record audio, video and screen ",
 	"homepage": "https://mediajs.com",
 	"bugs": {
 		"url": "https://github.com/027xiguapi/mediajs/issues"

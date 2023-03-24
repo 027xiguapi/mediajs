@@ -11,7 +11,7 @@ const preferredDisplaySurface = document.getElementById('displaySurface');
 const startButton = document.getElementById('startButton');
 
 if (adapter.browserDetails.browser === 'chrome' &&
-    adapter.browserDetails.version >= 107) {
+  adapter.browserDetails.version >= 107) {
   // See https://developer.chrome.com/docs/web-platform/screen-sharing-controls/
   document.getElementById('options').style.display = 'block';
 } else if (adapter.browserDetails.browser === 'firefox') {
@@ -48,14 +48,26 @@ function errorMsg(msg, error) {
 }
 
 
-startButton.addEventListener('click', () => {
-  const options = {audio: true, video: true};
+startButton.addEventListener('click', async () => {
+  const options = { audio: true, video: true };
   const displaySurface = preferredDisplaySurface.options[preferredDisplaySurface.selectedIndex].value;
   if (displaySurface !== 'default') {
-    options.video = {displaySurface};
+    options.video = { displaySurface };
   }
-  navigator.mediaDevices.getDisplayMedia(options)
-      .then(handleSuccess, handleError);
+
+  const recorder = mediajs.video(constraints)
+    .oncreate(() => {
+      const stream = recorder.getMedisStream();
+      handleSuccess(stream)
+    })
+    .onerror((type, err) => {
+      handleError(err)
+    });
+
+  await recorder.create();
+
+  // navigator.mediaDevices.getDisplayMedia(options)
+  //   .then(handleSuccess, handleError);
 });
 
 if ((navigator.mediaDevices && 'getDisplayMedia' in navigator.mediaDevices)) {

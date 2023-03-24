@@ -43,13 +43,25 @@ function errorMsg(msg, error) {
 }
 
 async function init(e) {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia(constraints);
-    handleSuccess(stream);
-    e.target.disabled = true;
-  } catch (e) {
-    handleError(e);
-  }
+  const video = mediajs.video(constraints)
+    .oncreate(() => {
+      const stream = video.getMedisStream();
+      handleSuccess(stream);
+      e.target.disabled = true;
+    })
+    .onerror((type, err) => {
+      handleError(err)
+    });
+
+  await video.create();
+
+  // try {
+  //   const stream = await navigator.mediaDevices.getUserMedia(constraints);
+  //   handleSuccess(stream);
+  //   e.target.disabled = true;
+  // } catch (e) {
+  //   handleError(e);
+  // }
 }
 
 document.querySelector('#showVideo').addEventListener('click', e => init(e));

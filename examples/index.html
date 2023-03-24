@@ -127,12 +127,11 @@
 			<!-- 按钮控制区域 -->
 			<div class="pd btns">
 				<div>
-					<button onclick="recOpen()" style="margin-right:10px">打开录音,请求权限</button>
-					<button onclick="recClose()" style="margin-right:0">关闭录音,释放资源</button>
+					<button onclick="recCreate()" style="margin-right:10px">打开录音,请求权限</button>
+					<button onclick="recDestroy()" style="margin-right:0">关闭录音,释放资源</button>
 				</div>
 
 				<button onclick="recStart()">录制</button>
-				<button onclick="recReset()">重置</button>
 				<button onclick="recStop()" style="margin-right:80px">停止</button>
 
 				<span style="display: inline-block;">
@@ -148,7 +147,9 @@
 			<!-- 波形绘制区域 -->
 			<div style="padding-top:5px">
 				<div style="border:1px solid #ccc;display:inline-block;vertical-align:bottom">
-					<div style="height:100px;width:300px;" class="recwave"></div>
+					<div style="height:100px;width:300px;" class="recwave">
+						<canvas id="waveform"></canvas>
+					</div>
 				</div>
 
 				<div
@@ -182,52 +183,84 @@
 		}
 
 		media.ondataavailable((blobEvent) => {
-			console.log('Mediajs', blobEvent);
-			clog("ondataavailable")
+			clog("ondataavailable: 数据交换")
 		});
 
-		media.onerror((e) => {
-			console.log('Mediajs', e);
-			clog("onerror")
+		media.onerror((type, err) => {
+			console.log('Mediajs', type, err);
+			clog("onerror: 出错了")
 		});
 
 		media.oncreate((e) => {
-			console.log('Mediajs', e)
 			clog("oncreate")
 		});
 
 		media.onstart((e) => {
-			console.log('Mediajs', e)
-			clog("onstart")
+			clog("onstart");
+			const audioCtx = new AudioContext();
+			var stream = media.getMedisStream();
+			// 创建 MediaStreamAudioSourceNode 实例
+			const source = audioCtx.createMediaStreamSource(stream);
+
+			// 创建 AnalyserNode 实例
+			const analyser = audioCtx.createAnalyser();
+			analyser.fftSize = 2048;
+			const bufferLength = analyser.frequencyBinCount;
+			const dataArray = new Uint8Array(bufferLength);
+
+			// 连接节点
+			source.connect(analyser);
+			analyser.connect(audioCtx.destination);
+
+			// 绘制波形图
+			const canvas = document.getElementById('waveform');
+			const canvasCtx = canvas.getContext('2d');
+			canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+			canvasCtx.lineWidth = 2;
+			canvasCtx.strokeStyle = 'rgb(255, 0, 0)';
+			canvasCtx.beginPath();
+			const sliceWidth = canvas.width * 1.0 / bufferLength;
+			let x = 0;
+			function draw() {
+				requestAnimationFrame(draw);
+				analyser.getByteTimeDomainData(dataArray);
+				canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+				canvasCtx.beginPath();
+				let x = 0;
+				for (let i = 0; i < bufferLength; i++) {
+					const v = dataArray[i] / 128.0;
+					const y = v * canvas.height / 2;
+					if (i === 0) {
+						canvasCtx.moveTo(x, y);
+					} else {
+						canvasCtx.lineTo(x, y);
+					}
+					x += sliceWidth;
+				}
+				canvasCtx.stroke();
+			}
+			draw();
 		});
 
 		media.onstop((e) => {
-			console.log('Mediajs', e)
 			clog("onstop")
 		});
 
 		media.onpause((e) => {
-			console.log('Mediajs', e)
 			clog("onpause")
 		});
 
 		media.onresume((e) => {
-			console.log('Mediajs', e)
 			clog("onresume")
 		});
 
-		// media.onreset((e) => {
-		// 	console.log('Mediajs', e)
-		// 	clog("onreset")
-		// });
-
-		function recOpen() {
+		function recCreate() {
 			media.create();
 		}
 
 		/**关闭录音，释放资源**/
-		function recClose() {
-			media.close();
+		function recDestroy() {
+			media.destroy();
 		};
 
 		/**开始录音**/

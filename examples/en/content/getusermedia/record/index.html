@@ -7,6 +7,7 @@
  *  tree.
 -->
 <html>
+
 <head>
 
     <meta charset="utf-8">
@@ -31,46 +32,47 @@
 
 <body>
 
-<div id="container">
+    <div id="container">
 
-    <h1><a href="//webrtc.github.io/samples/" title="WebRTC samples homepage">WebRTC samples</a>
-        <span>MediaRecorder</span></h1>
+        <h1><a href="//webrtc.github.io/samples/" title="WebRTC samples homepage">WebRTC samples</a>
+            <span>MediaRecorder</span>
+        </h1>
 
-    <p>For more information see the MediaStream Recording API <a
-            href="http://w3c.github.io/mediacapture-record/MediaRecorder.html"
-            title="W3C MediaStream Recording API Editor's Draft">Editor's&nbsp;Draft</a>.</p>
+        <p>For more information see the MediaStream Recording API <a
+                href="http://w3c.github.io/mediacapture-record/MediaRecorder.html"
+                title="W3C MediaStream Recording API Editor's Draft">Editor's&nbsp;Draft</a>.</p>
 
-    <video id="gum" playsinline autoplay muted></video>
-    <video id="recorded" playsinline loop></video>
+        <video id="gum" playsinline autoplay muted></video>
+        <video id="recorded" playsinline loop></video>
 
-    <div>
-        <button id="start">Start camera</button>
-        <button id="record" disabled>Start Recording</button>
-        <button id="play" disabled>Play</button>
-        <button id="download" disabled>Download</button>
+        <div>
+            <button id="start">Start camera</button>
+            <button id="record" disabled>Start Recording</button>
+            <button id="play" disabled>Play</button>
+            <button id="download" disabled>Download</button>
+        </div>
+
+        <div>
+            Recording format: <select id="codecPreferences" disabled></select>
+        </div>
+        <div>
+            <h4>Media Stream Constraints options</h4>
+            <p>Echo cancellation: <input type="checkbox" id="echoCancellation"></p>
+        </div>
+
+        <div>
+            <span id="errorMsg"></span>
+        </div>
+
+        <a href="https://github.com/webrtc/samples/tree/gh-pages/src/content/getusermedia/record"
+            title="View source for this page on GitHub" id="viewSource">View source on GitHub</a>
+
     </div>
 
-    <div>
-        Recording format: <select id="codecPreferences" disabled></select>
-    </div>
-    <div>
-        <h4>Media Stream Constraints options</h4>
-        <p>Echo cancellation: <input type="checkbox" id="echoCancellation"></p>
-    </div>
-
-    <div>
-        <span id="errorMsg"></span>
-    </div>
-
-    <a href="https://github.com/webrtc/samples/tree/gh-pages/src/content/getusermedia/record"
-       title="View source for this page on GitHub" id="viewSource">View source on GitHub</a>
-
-</div>
-
-<!-- include adapter for srcObject shim -->
-<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
-<script src="js/main.js" async></script>
-<script src="../../../js/lib/ga.js"></script>
+    <!-- include adapter for srcObject shim -->
+    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+    <script src="js/main.js" async></script>
 
 </body>
+
 </html>

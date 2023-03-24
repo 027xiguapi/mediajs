@@ -7,6 +7,7 @@
  *  tree.
 -->
 <html>
+
 <head>
 
     <meta charset="utf-8">
@@ -27,7 +28,8 @@
     <link rel="stylesheet" href="../../../css/main.css">
 
     <style>
-        body, html {
+        body,
+        html {
             height: 100%;
         }
 
@@ -69,52 +71,53 @@
 
 <body>
 
-<div id="container">
+    <div id="container">
 
-    <h1><a href="//webrtc.github.io/samples/" title="WebRTC samples homepage">WebRTC samples</a> <span>getUserMedia: select resolution</span>
-    </h1>
-    <p></p>
+        <h1><a href="//webrtc.github.io/samples/" title="WebRTC samples homepage">WebRTC samples</a> <span>getUserMedia:
+                select resolution</span>
+        </h1>
+        <p></p>
 
-    <p>This example uses <a href="https://w3c.github.io/mediacapture-main/getusermedia.html#media-track-constraints"
-                            title="W3C getusermedia specification - constraints section">constraints</a>.</p>
+        <p>This example uses <a href="https://w3c.github.io/mediacapture-main/getusermedia.html#media-track-constraints"
+                title="W3C getusermedia specification - constraints section">constraints</a>.</p>
 
-    <p>Click a button to call <code>getUserMedia()</code> with appropriate resolution.</p>
+        <p>Click a button to call <code>getUserMedia()</code> with appropriate resolution.</p>
 
-    <div id="buttons">
-        <button id="qvga">QVGA</button>
-        <button id="vga">VGA</button>
-        <button id="hd">HD</button>
-        <button id="full-hd">Full HD</button>
-        <button id="televisionFourK">Television 4K (3840x2160)</button>
-        <button id="cinemaFourK">Cinema 4K (4096x2160)</button>
-        <button id="eightK">8K</button>
-    </div>
-
-    <div id="videoblock">
-        <p id="dimensions"></p>
-
-        <video id="gum-res-local" playsinline autoplay></video>
-        <div id="width">
-            <label>Width <span></span>px:</label>
-            <input type="range" min="0" max="7680" value="0">
+        <div id="buttons">
+            <button id="qvga">QVGA</button>
+            <button id="vga">VGA</button>
+            <button id="hd">HD</button>
+            <button id="full-hd">Full HD</button>
+            <button id="televisionFourK">Television 4K (3840x2160)</button>
+            <button id="cinemaFourK">Cinema 4K (4096x2160)</button>
+            <button id="eightK">8K</button>
         </div>
-        <input id="sizelock" type="checkbox">Lock video size<br>
-        <input id="aspectlock" type="checkbox">Lock aspect ratio<br>
+
+        <div id="videoblock">
+            <p id="dimensions"></p>
+
+            <video id="gum-res-local" playsinline autoplay></video>
+            <div id="width">
+                <label>Width <span></span>px:</label>
+                <input type="range" min="0" max="7680" value="0">
+            </div>
+            <input id="sizelock" type="checkbox">Lock video size<br>
+            <input id="aspectlock" type="checkbox">Lock aspect ratio<br>
+        </div>
+        <p id="errormessage"></p>
+
+        <p>For more information, see <a href="http://www.html5rocks.com/en/tutorials/getusermedia/intro/"
+                title="Media capture article by Eric Bidelman on HTML5 Rocks">Capturing Audio &amp;
+                Video in HTML5</a> on HTML5 Rocks.</p>
+
+        <a href="https://github.com/webrtc/samples/tree/gh-pages/src/content/getusermedia/resolution"
+            title="View source for this page on GitHub" id="viewSource">View source on GitHub</a>
     </div>
-    <p id="errormessage"></p>
 
-    <p>For more information, see <a href="http://www.html5rocks.com/en/tutorials/getusermedia/intro/"
-                                    title="Media capture article by Eric Bidelman on HTML5 Rocks">Capturing Audio &amp;
-        Video in HTML5</a> on HTML5 Rocks.</p>
+    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+    <script src="js/main.js" async></script>
 
-    <a href="https://github.com/webrtc/samples/tree/gh-pages/src/content/getusermedia/resolution"
-       title="View source for this page on GitHub" id="viewSource">View source on GitHub</a>
-</div>
-
-<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
-<script src="js/main.js" async></script>
-
-<script src="../../../js/lib/ga.js"></script>
 
 </body>
+
 </html>

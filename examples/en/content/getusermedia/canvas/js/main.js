@@ -15,7 +15,7 @@ canvas.width = 480;
 canvas.height = 360;
 
 const button = document.querySelector('button');
-button.onclick = function() {
+button.onclick = function () {
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
   canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -35,4 +35,16 @@ function handleError(error) {
   console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
 }
 
-navigator.mediaDevices.getUserMedia(constraints).then(handleSuccess).catch(handleError);
+const recorder = mediajs.video(constraints)
+  .oncreate(() => {
+    const stream = recorder.getMedisStream();
+    handleSuccess(stream)
+  })
+  .onerror((type, err) => {
+    handleError(err)
+  });
+
+recorder.create();
+
+
+// navigator.mediaDevices.getUserMedia(constraints).then(handleSuccess).catch(handleError);
