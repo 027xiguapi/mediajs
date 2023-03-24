@@ -378,7 +378,7 @@ class Media extends EventTarget {
 				audioContext.decodeAudioData(
 					arrayBuffer,
 					(buffer) => {
-						const duration = buffer.duration;
+						const duration = Math.round(buffer.duration * 1000);
 						resolve(duration);
 					},
 					(err) => {
