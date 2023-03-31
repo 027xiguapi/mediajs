@@ -36,7 +36,7 @@ function handleSuccess(stream) {
   // browser console.
   window.stream = stream;
   const soundMeter = window.soundMeter = new SoundMeter(window.audioContext);
-  soundMeter.connectToSource(stream, function(e) {
+  soundMeter.connectToSource(stream, function (e) {
     if (e) {
       alert(e);
       return;
@@ -57,7 +57,7 @@ function handleError(error) {
 }
 
 
-function start() {
+async function start() {
   console.log('Requesting local stream');
   startButton.disabled = true;
   stopButton.disabled = false;
@@ -69,10 +69,21 @@ function start() {
     alert('Web Audio API not supported.');
   }
 
-  navigator.mediaDevices
-      .getUserMedia(constraints)
-      .then(handleSuccess)
-      .catch(handleError);
+  // navigator.mediaDevices
+  //   .getUserMedia(constraints)
+  //   .then(handleSuccess)
+  //   .catch(handleError);
+
+  const audio = mediajs.audio(constraints)
+    .oncreate(() => {
+      const stream = audio.getMedisStream();
+      handleSuccess(stream);
+    })
+    .onerror((type, err) => {
+      handleError(err)
+    });
+
+  audio.create();
 }
 
 function stop() {

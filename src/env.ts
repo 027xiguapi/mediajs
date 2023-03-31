@@ -28,6 +28,10 @@ export const Env = new (class {
 		return typeof MediaRecorder !== "undefined";
 	}
 
+	isAudioWorkletNode(): boolean {
+		return typeof AudioWorkletNode !== "undefined";
+	}
+
 	isBrowserSupported(): boolean {
 		const browser = this.getBrowser();
 		const version = this.getVersion();
@@ -63,7 +67,8 @@ export const Env = new (class {
 				this.isAudioContextSupported() &&
 				this.isMediaDevicesSupported() &&
 				this.isGetUserMediaSupported() &&
-				this.isMediaRecorderSupported()
+				this.isMediaRecorderSupported() &&
+				this.isAudioWorkletNode()
 			)
 		)
 			return false;
@@ -81,6 +86,8 @@ export const Env = new (class {
 	isGetUserMediaSupported:${this.isGetUserMediaSupported()}
 	isMediaRecorderSupported:${this.isMediaRecorderSupported()}
     isBrowserSupported:${this.isBrowserSupported()}
-    isUnifiedPlanSupported:${this.isUnifiedPlanSupported()}`;
+	isAudioWorkletNode:${this.isAudioWorkletNode()}
+    isUnifiedPlanSupported:${this.isUnifiedPlanSupported()}
+	`;
 	}
 })();

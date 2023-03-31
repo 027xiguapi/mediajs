@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<button onclick="init()">sea</button>
+
+<body>
+    <script>
+
+        window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext || window.msAudioContext;
+        try {
+            var context = null;
+            var source = null;
+            var audioBuffer = null;
+
+            function stopSound() {
+                if (source) {
+                    source.stop(0); //立即停止
+                }
+            }
+
+            async function playSound() {
+                // source = context.createBufferSource();
+                // source.buffer = audioBuffer;
+                // source.loop = true; //循环播放
+                // source.connect(context.destination);
+                // source.start(0); //立即播放
+
+                // 在这里处理AudioBuffer对象
+                const sourceNode = context.createBufferSource();
+                sourceNode.buffer = audioBuffer;
+
+                await context.audioWorklet.addModule(
+                    "http://127.0.0.1:5500/dist/worklet.js",
+                );
+                const workletNode = new AudioWorkletNode(context, "sound-meter-processor");
+                // await audioCocontextntext.audioWorklet.addModule("http://localhost:5500/dist/worklet.js");
+                // const workletNode = new AudioWorkletNode(context, 'worklet-processor');
+                sourceNode.connect(workletNode);
+                sourceNode.loop = true;
+                sourceNode.connect(context.destination);
+                sourceNode.start(0);
+            }
+
+            function initSound(arrayBuffer) {
+                context.decodeAudioData(arrayBuffer, function (buffer) { //解码成功时的回调函数
+                    audioBuffer = buffer;
+                    playSound();
+                }, function (e) { //解码出错时的回调函数
+                    console.log('Error decoding file', e);
+                });
+            }
+
+            function loadAudioFile(url) {
+                var xhr = new XMLHttpRequest(); //通过XHR下载音频文件
+                xhr.open('GET', url, true);
+                xhr.responseType = 'arraybuffer';
+                xhr.onload = function (e) { //下载完成
+                    initSound(this.response);
+                };
+                xhr.send();
+            }
+
+            function init() {
+                context = new window.AudioContext();
+                // loadAudioFile('http://localhost:5500/examples/assets/file/sea.mp3');
+                // loadAudioFile('http://localhost:5500/examples/assets/file/chrome.webm');
+            }
+
+            // $("#stop").click(function () {
+            //     stopSound();
+            // });
+        } catch (e) {
+            console.log(e)
+            console.log('!Your browser does not support AudioContext');
+        }
+
+
+    </script>
+</body>
+
+</html>

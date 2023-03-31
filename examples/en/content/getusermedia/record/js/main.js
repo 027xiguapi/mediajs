@@ -36,7 +36,7 @@ recordButton.addEventListener('click', () => {
 const playButton = document.querySelector('button#play');
 playButton.addEventListener('click', () => {
   const mimeType = codecPreferences.options[codecPreferences.selectedIndex].value.split(';', 1)[0];
-  const superBuffer = new Blob(recordedBlobs, {type: mimeType});
+  const superBuffer = new Blob(recordedBlobs, { type: mimeType });
   recordedVideo.src = null;
   recordedVideo.srcObject = null;
   recordedVideo.src = window.URL.createObjectURL(superBuffer);
@@ -46,7 +46,7 @@ playButton.addEventListener('click', () => {
 
 const downloadButton = document.querySelector('button#download');
 downloadButton.addEventListener('click', () => {
-  const blob = new Blob(recordedBlobs, {type: 'video/webm'});
+  const blob = new Blob(recordedBlobs, { type: 'video/webm' });
   const url = window.URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.style.display = 'none';
@@ -82,7 +82,7 @@ function getSupportedMimeTypes() {
 function startRecording() {
   recordedBlobs = [];
   const mimeType = codecPreferences.options[codecPreferences.selectedIndex].value;
-  const options = {mimeType};
+  const options = { mimeType };
 
   try {
     mediaRecorder = new MediaRecorder(window.stream, options);
@@ -128,13 +128,24 @@ function handleSuccess(stream) {
 }
 
 async function init(constraints) {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia(constraints);
-    handleSuccess(stream);
-  } catch (e) {
-    console.error('navigator.getUserMedia error:', e);
-    errorMsgElement.innerHTML = `navigator.getUserMedia error:${e.toString()}`;
-  }
+  const video = mediajs.video(constraints)
+    .oncreate(() => {
+      const stream = video.getMedisStream();
+      handleSuccess(stream);
+    })
+    .onerror((type, err) => {
+      console.error('navigator.getUserMedia error:', e);
+      errorMsgElement.innerHTML = `navigator.getUserMedia error:${e.toString()}`;
+    });
+
+  video.create();
+  // try {
+  //   const stream = await navigator.mediaDevices.getUserMedia(constraints);
+  //   handleSuccess(stream);
+  // } catch (e) {
+  //   console.error('navigator.getUserMedia error:', e);
+  //   errorMsgElement.innerHTML = `navigator.getUserMedia error:${e.toString()}`;
+  // }
 }
 
 document.querySelector('button#start').addEventListener('click', async () => {
@@ -142,7 +153,7 @@ document.querySelector('button#start').addEventListener('click', async () => {
   const hasEchoCancellation = document.querySelector('#echoCancellation').checked;
   const constraints = {
     audio: {
-      echoCancellation: {exact: hasEchoCancellation}
+      echoCancellation: { exact: hasEchoCancellation }
     },
     video: {
       width: 1280, height: 720

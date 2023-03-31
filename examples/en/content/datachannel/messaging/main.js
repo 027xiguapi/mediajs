@@ -8,7 +8,7 @@
 /* eslint no-unused-expressions: 0 */
 
 'use strict';
-import {LitElement, html} from 'https://unpkg.com/@polymer/lit-element@0.6.2?module';
+import { LitElement, html } from 'https://unpkg.com/@polymer/lit-element@0.6.2?module';
 
 class MessagingSample extends LitElement {
   constructor() {
@@ -26,7 +26,7 @@ class MessagingSample extends LitElement {
   async connect() {
     console.log('connect!');
     try {
-      const dataChannelParams = {ordered: true};
+      const dataChannelParams = { ordered: true };
       window.localConnection = this._localConnection = new RTCPeerConnection();
       this._localConnection.addEventListener('icecandidate', async e => {
         console.log('local connection ICE candidate: ', e.candidate);
@@ -39,7 +39,7 @@ class MessagingSample extends LitElement {
       });
 
       window.localChannel = this._localChannel = this._localConnection
-          .createDataChannel('messaging-channel', dataChannelParams);
+        .createDataChannel('messaging-channel', dataChannelParams);
       this._localChannel.binaryType = 'arraybuffer';
       this._localChannel.addEventListener('open', () => {
         console.log('Local channel open!');
@@ -99,16 +99,16 @@ class MessagingSample extends LitElement {
 
   static get properties() {
     return {
-      connected: {type: Boolean},
-      localMessages: {type: String},
-      remoteMessages: {type: String}
+      connected: { type: Boolean },
+      localMessages: { type: String },
+      remoteMessages: { type: String }
     };
   }
 
   render() {
     return html`<section>
   <style>
-  @import "../../../css/main.css";
+  @import "../../../../assets/css/main.css";
   @import "main.css";
   </style>
   <div>

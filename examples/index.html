@@ -186,8 +186,8 @@
 			clog("ondataavailable: 数据交换")
 		});
 
-		media.onerror((type, err) => {
-			console.log('Mediajs', type, err);
+		media.onerror((err) => {
+			console.log('Mediajs', err.type, err.message);
 			clog("onerror: 出错了")
 		});
 
@@ -240,6 +240,11 @@
 				canvasCtx.stroke();
 			}
 			draw();
+
+			setInterval(() => {
+				console.log('getInstant', media.getSoundMeter().getInstant());
+			}, 500)
+
 		});
 
 		media.onstop((e) => {
@@ -256,6 +261,26 @@
 
 		function recCreate() {
 			media.create();
+			// const audioContext = new AudioContext();
+			// fetch('http://localhost:5500/examples/assets/file/sea.mp3')
+			// 	.then(response => response.arrayBuffer())
+			// 	.then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
+			// 	.then(async (audioBuffer) => {
+			// 		// 在这里处理AudioBuffer对象
+			// 		const sourceNode = audioContext.createBufferSource();
+			// 		sourceNode.buffer = audioBuffer;
+
+			// 		await audioContext.audioWorklet.addModule(
+			// 			"http://127.0.0.1:5500/dist/worklet.js",
+			// 		);
+			// 		const workletNode = new AudioWorkletNode(audioContext, "sound-meter-processor");
+			// 		// await audioContext.audioWorklet.addModule("http://localhost:5500/dist/worklet.js");
+			// 		// const workletNode = new AudioWorkletNode(audioContext, 'worklet-processor');
+			// 		sourceNode.connect(workletNode);
+			// 		workletNode.connect(audioContext.destination);
+
+			// 		sourceNode.start(0);
+			// 	});
 		}
 
 		/**关闭录音，释放资源**/

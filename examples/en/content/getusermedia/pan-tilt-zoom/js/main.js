@@ -42,7 +42,7 @@ function handleSuccess(stream) {
     input.disabled = false;
     input.oninput = async event => {
       try {
-        const constraints = {advanced: [{[ptz]: input.value}]};
+        const constraints = { advanced: [{ [ptz]: input.value }] };
         await track.applyConstraints(constraints);
       } catch (err) {
         console.error('applyConstraints() failed: ', err);
@@ -69,13 +69,24 @@ function errorMsg(msg, error) {
 }
 
 async function init(e) {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia(constraints);
-    handleSuccess(stream);
-    e.target.disabled = true;
-  } catch (e) {
-    handleError(e);
-  }
+  // try {
+  //   const stream = await navigator.mediaDevices.getUserMedia(constraints);
+  //   handleSuccess(stream);
+  //   e.target.disabled = true;
+  // } catch (e) {
+  //   handleError(e);
+  // }
+
+  const video = mediajs.audio(constraints)
+    .oncreate(() => {
+      const stream = video.getMedisStream();
+      handleSuccess(stream);
+    })
+    .onerror((type, err) => {
+      handleError(err)
+    });
+
+  video.create();
 }
 
 document.querySelector('#showVideo').addEventListener('click', e => init(e));

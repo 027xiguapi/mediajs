@@ -25,7 +25,7 @@
 
     <link rel="icon" sizes="192x192" href="../../../images/webrtc-icon-192x192.png">
     <link href="//fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="../../../css/main.css" />
+    <link rel="stylesheet" href="../../../../assets/css/main.css" />
     <link rel="stylesheet" href="css/main.css" />
 
 </head>
@@ -40,8 +40,10 @@
 
         <video id="leftVideo" playsinline controls muted>
             <!-- NB CORS: https://bugzilla.mozilla.org/show_bug.cgi?id=1177793 -->
-            <source src="../../../video/chrome.webm" type="video/webm" />
-            <source src="../../../video/chrome.mp4" type="video/mp4" />
+            <source src="../../../../assets/file/chrome.webm" type="video/webm" />
+            <source src="../../../../assets/file//chrome.mp4" type="video/mp4" />
+            <!-- <source src="../../../video/chrome.webm" type="video/webm" />
+            <source src="../../../video/chrome.mp4" type="video/mp4" /> -->
             <p>This browser does not support the video element.</p>
         </video>
 
@@ -73,6 +75,7 @@
     </div>
 
     <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+    <script src="../../../../../dist/mediajs.global.min.js"></script>
     <script src="js/main.js" async></script>
 
 </body>

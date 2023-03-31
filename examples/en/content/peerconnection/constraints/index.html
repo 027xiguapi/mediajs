@@ -25,7 +25,7 @@
 
     <link rel="icon" sizes="192x192" href="../../../images/webrtc-icon-192x192.png">
     <link href="//fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="../../../css/main.css" />
+    <link rel="stylesheet" href="../../../../assets/css/main.css" />
     <link rel="stylesheet" href="css/main.css" />
 
 </head>
@@ -43,7 +43,8 @@
             <p>Set camera constraints, and click <strong>Get media</strong> to (re)open the camera with these included.
                 Click <strong>Connect</strong> to create a (local) peer connection. The RTCPeerConnection objects
                 <code>localPeerConnection</code>
-                and <code>remotePeerConnection</code> can be inspected from the console.</p>
+                and <code>remotePeerConnection</code> can be inspected from the console.
+            </p>
             <p>Setting a value to zero will remove that constraint. </p>
             <p>The lefthand video shows the output of <code>getUserMedia()</code>; on the right is the video after being
                 passed through the peer connection. The transmission bitrate is displayed below the righthand video.</p>
@@ -117,6 +118,7 @@
     </div>
 
     <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+    <script src="../../../../../dist/mediajs.global.min.js"></script>
     <script src="js/main.js" async></script>
 
 </body>
