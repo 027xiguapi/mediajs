@@ -55,12 +55,12 @@ startButton.addEventListener('click', async () => {
     options.video = { displaySurface };
   }
 
-  const recorder = mediajs.video(constraints)
+  const recorder = mediajs.video(options)
     .oncreate(() => {
       const stream = recorder.getMedisStream();
       handleSuccess(stream)
     })
-    .onerror((type, err) => {
+    .onerror((err) => {
       handleError(err)
     });
 

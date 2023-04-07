@@ -1,9 +1,8 @@
-import { Media, audio, video, screen } from "./exports";
+import { audio, video, screen } from "./exports";
 import { Env } from "./env";
 import { version } from "../package.json";
 
 (<any>window).mediajs = {
-	Media,
 	audio,
 	video,
 	screen,
@@ -11,4 +10,3 @@ import { version } from "../package.json";
 	version,
 };
 /** @deprecated Should use mediajs namespace */
-// (<any>window).Media = Media;

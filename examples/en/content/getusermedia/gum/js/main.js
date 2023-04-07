@@ -49,10 +49,11 @@ async function init(e) {
       handleSuccess(stream);
       e.target.disabled = true;
     })
-    .onerror((type, err) => {
+    .onerror((err) => {
       handleError(err)
     });
 
+  console.log(video.getSupportedMimeTypes())
   await video.create();
 
   // try {

@@ -1,19 +1,24 @@
 import EventTarget from "./eventTarget";
 import SoundMeter from "./soundMeter";
 import { Env } from "./env";
+import type {
+	MediaType,
+	MediaState,
+	AudioOption,
+	VideoOption,
+	ScreenOption,
+} from "./type";
 
-// 录音、录像、录屏
-type MediaType = "audio" | "video" | "screen";
-
-// 只需要记住：把输入 stream 存放在 blobList，最后转预览 blobUrl。
 class Media extends EventTarget {
 	private medisStream: MediaStream | null = null;
+
 	private mediaRecorder: MediaRecorder | null = null;
+
 	private mediaBlobs: Blob[] = [];
+
 	private soundMeter: SoundMeter | null = null;
 
-	// 0 未开始  1 等待ctx激活 2 已激活ctx激活未录音
-	private mediaState: number = 0;
+	private mediaState: MediaState = "inactive";
 
 	private mediaStreamConstraints: MediaStreamConstraints | null = null;
 
@@ -21,48 +26,129 @@ class Media extends EventTarget {
 
 	private mediaType: MediaType;
 
-	private timeslice: number | null = null;
+	private timeSlice: number | null = null;
 
-	constructor(mediaType: MediaType) {
+	constructor(
+		mediaType: MediaType,
+		option?: AudioOption | VideoOption | ScreenOption,
+	) {
 		super();
 		if (Env.isUnifiedPlanSupported()) {
-			this.setMediaType(mediaType);
+			this.setMediaType(mediaType).setConfig(option);
 		} else {
 			this.emit("error", { type: "constructor", message: `${Env.toString()}` });
 		}
 	}
 
-	setTimeslice(timeslice: number) {
-		timeslice && (this.timeslice = timeslice);
+	setConfig(option?: AudioOption | VideoOption | ScreenOption) {
+		switch (this.mediaType) {
+			case "audio":
+				this.setAudioConfig(option);
+				break;
+
+			case "video":
+				this.setVideoConfig(option);
+				break;
+
+			case "screen":
+				this.setScreenConfig(option);
+				break;
+		}
+
 		return this;
 	}
 
-	getTimeslice() {
-		return this.timeslice;
+	getAudioConstraints(option) {
+		let { audio, sampleRate, echoCancellation } = option || {};
+
+		if (
+			typeof sampleRate === "undefined" &&
+			typeof echoCancellation === "undefined"
+		) {
+			audio || (audio = true);
+		} else {
+			audio = {};
+			sampleRate && (audio["sampleRate"] = sampleRate);
+			echoCancellation &&
+				(audio["echoCancellation"] = { exact: echoCancellation });
+		}
+
+		return audio;
 	}
 
-	getSupportedMimeTypes() {
-		const possibleTypes = [
-			"video/webm",
-			"audio/webm",
-			"video/webm;codecs=vp9",
-			"video/webm;codecs=vp8",
-			"video/webm;codecs=daala",
-			"video/webm;codecs=h264",
-			"audio/webm;codecs=opus",
-			"video/mp4;codecs=h264",
-		];
+	getVideoConstraints(option) {
+		let { video, sampleRate, width, height } = option || {};
 
-		// const possibleTypes = [
-		// 	"video/webm;codecs=vp9,opus",
-		// 	"video/webm;codecs=vp8,opus",
-		// 	"video/webm;codecs=h264,opus",
-		// 	"video/mp4;codecs=h264,aac",
-		// ];
+		if (
+			typeof sampleRate === "undefined" &&
+			typeof width === "undefined" &&
+			typeof height === "undefined"
+		) {
+			video || (video = true);
+		} else {
+			video = {};
+			sampleRate && (video["sampleRate"] = sampleRate);
+			width && (video["width"] = width);
+			height && (video["height"] = height);
+		}
 
-		return possibleTypes.filter((mimeType) => {
-			return MediaRecorder.isTypeSupported(mimeType);
-		});
+		return video;
+	}
+
+	getConfigOptions(option) {
+		let { mimeType, audioBitsPerSecond, videoBitsPerSecond } = option || {};
+		let options = {
+			mimeType:
+				mimeType || (this.mediaType === "audio" ? "audio/webm" : "video/webm"),
+		};
+		audioBitsPerSecond && (options["audioBitsPerSecond"] = audioBitsPerSecond);
+		videoBitsPerSecond && (options["videoBitsPerSecond"] = videoBitsPerSecond);
+
+		return options;
+	}
+
+	setAudioConfig(option: AudioOption) {
+		let audio = this.getAudioConstraints(option);
+		let options = this.getConfigOptions(option);
+
+		this.setMediaStreamConstraints({ audio })
+			.setMediaRecorderOptions(options)
+			.setTimeSlice(option.timeSlice);
+
+		return this;
+	}
+
+	setVideoConfig(option: VideoOption) {
+		let audio = this.getAudioConstraints(option);
+		let video = this.getVideoConstraints(option);
+		let options = this.getConfigOptions(option);
+
+		this.setMediaStreamConstraints({ video, audio })
+			.setMediaRecorderOptions(options)
+			.setTimeSlice(option.timeSlice);
+
+		return this;
+	}
+
+	setScreenConfig(option: ScreenOption) {
+		let audio = this.getAudioConstraints(option);
+		let video = this.getVideoConstraints(option);
+		let options = this.getConfigOptions(option);
+
+		this.setMediaStreamConstraints({ video, audio })
+			.setMediaRecorderOptions(options)
+			.setTimeSlice(option.timeSlice);
+
+		return this;
+	}
+
+	setTimeSlice(timeSlice: number) {
+		timeSlice && (this.timeSlice = timeSlice);
+		return this;
+	}
+
+	getTimeSlice() {
+		return this.timeSlice;
 	}
 
 	getMediaType() {
@@ -91,17 +177,17 @@ class Media extends EventTarget {
 		this.setMediaStreamConstraints(constraints);
 		const _constraints = this.getMediaStreamConstraints();
 		const mediaType = this.getMediaType();
-		this.setMediaState(1);
+		this.setMediaState("wait");
 		try {
 			this.medisStream =
 				mediaType === "screen"
 					? await navigator.mediaDevices.getDisplayMedia(_constraints)
 					: await navigator.mediaDevices.getUserMedia(_constraints);
-			this.setMediaState(2);
+			this.setMediaState("ready");
 			this.setSoundMeter();
 			return this;
 		} catch (err) {
-			this.setMediaState(0);
+			this.setMediaState("inactive");
 			this.emit("error", { type: "setMedisStream", message: err });
 		}
 	}
@@ -152,11 +238,11 @@ class Media extends EventTarget {
 		return this.mediaBlobs;
 	}
 
-	getMediaState(): number {
+	getMediaState(): MediaState {
 		return this.mediaState;
 	}
 
-	private setMediaState(mediaState: number) {
+	private setMediaState(mediaState: MediaState) {
 		this.mediaState = mediaState;
 		return this;
 	}
@@ -215,7 +301,7 @@ class Media extends EventTarget {
 
 	isReady(type: string = "isReady"): boolean {
 		const mediaState = this.getMediaState();
-		if (mediaState === 2) {
+		if (mediaState === "ready") {
 			return true;
 		} else {
 			const err = `the cureent mediaState is ${mediaState}, Please use open function`;
@@ -231,7 +317,7 @@ class Media extends EventTarget {
 
 	// 创建
 	async create() {
-		if (this.getMediaState() === 0) {
+		if (this.getMediaState() === "inactive") {
 			const media = await this.setMedisStream();
 			if (media) {
 				this.setMediaRecorder();
@@ -253,13 +339,13 @@ class Media extends EventTarget {
 
 	// 销毁
 	destroy() {
-		if (this.getMediaState() !== 0) {
+		if (this.getMediaState() !== "inactive") {
 			this.getRecorderState() !== "inactive" && this.stop();
 			this.medisStream?.getTracks().forEach((track) => track.stop());
 			this.mediaBlobs = [];
 			this.medisStream = null;
 			this.mediaRecorder = null;
-			this.setMediaState(0);
+			this.setMediaState("inactive");
 			this.emit("destroy");
 			return this;
 		} else {
@@ -281,13 +367,13 @@ class Media extends EventTarget {
 	}
 
 	// 开始
-	start(timeslice?: number) {
+	start(timeSlice?: number) {
 		if (!this.isReady()) return this;
 		try {
-			this.setTimeslice(timeslice);
-			timeslice = this.getTimeslice();
-			timeslice
-				? this.mediaRecorder?.start(timeslice)
+			this.setTimeSlice(timeSlice);
+			timeSlice = this.getTimeSlice();
+			timeSlice
+				? this.mediaRecorder?.start(timeSlice)
 				: this.mediaRecorder?.start();
 			return this;
 		} catch (err) {
@@ -346,25 +432,11 @@ class Media extends EventTarget {
 		return this;
 	}
 
-	setSoundMeter() {
+	setSoundMeter(medisStream?: MediaStream) {
 		try {
 			const audioContext = new AudioContext();
-			// const sourceNode = audioContext.createMediaStreamSource(this.medisStream);
-			// sourceNode.connect(audioContext.destination);
 			this.soundMeter = new SoundMeter(audioContext);
-			// const sourceNode = new MediaStreamAudioSourceNode(audioContext, {
-			// 	mediaStream: this.medisStream,
-			// });
-			// sourceNode.connect(audioContext.destination);
-
-			// const inputStream = audioContext.createMediaStreamSource(
-			// 	this.medisStream,
-			// );
-			// const analyserNode = audioContext.createAnalyser();
-			// analyserNode.fftSize = 2048;
-			// inputStream.connect(analyserNode);
-
-			this.soundMeter.connectToSource(this.medisStream);
+			this.soundMeter.connectToSource(medisStream || this.medisStream);
 			return this;
 		} catch (err) {
 			this.emit("error", { type: "setSoundMeter", message: err });
@@ -454,6 +526,27 @@ class Media extends EventTarget {
 		} catch (err) {
 			this.emit("error", { type: "_enumerateDevices", message: err });
 		}
+	}
+
+	getSupportedMimeTypes() {
+		const possibleTypes = [
+			"video/webm",
+			"audio/webm",
+			"video/webm;codecs=vp9",
+			"video/webm;codecs=vp8",
+			"video/webm;codecs=daala",
+			"video/webm;codecs=h264",
+			"audio/webm;codecs=opus",
+			"video/mp4;codecs=h264",
+		];
+
+		return possibleTypes.filter((mimeType) => {
+			return this._isTypeSupported(mimeType);
+		});
+	}
+
+	_isTypeSupported(mimeType: string): boolean {
+		return MediaRecorder.isTypeSupported(mimeType);
 	}
 }
 

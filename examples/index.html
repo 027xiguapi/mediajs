@@ -169,7 +169,7 @@
 
 	<!-- 【3】实现录音逻辑 -->
 	<script>
-		var media = mediajs.audio({ type: "audio/webm;codecs=opus", bitsPerSecond: 16000 });
+		var media = mediajs.audio({ mimeType: "audio/webm;codecs=opus", });
 
 		var clog = function (s, color) {
 			var now = new Date();

@@ -41,7 +41,8 @@ function init() {
       const stream = audio.getMedisStream();
       handleSuccess(stream);
     })
-    .onerror((type, err) => {
+    .onerror((err) => {
+      console.log(err)
       handleError(err)
     });
 
