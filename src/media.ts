@@ -113,7 +113,7 @@ class Media extends EventTarget {
 
 		this.setMediaStreamConstraints({ audio })
 			.setMediaRecorderOptions(options)
-			.setTimeSlice(option.timeSlice);
+			.setTimeSlice(option?.timeSlice);
 
 		return this;
 	}
@@ -125,7 +125,7 @@ class Media extends EventTarget {
 
 		this.setMediaStreamConstraints({ video, audio })
 			.setMediaRecorderOptions(options)
-			.setTimeSlice(option.timeSlice);
+			.setTimeSlice(option?.timeSlice);
 
 		return this;
 	}
@@ -137,7 +137,7 @@ class Media extends EventTarget {
 
 		this.setMediaStreamConstraints({ video, audio })
 			.setMediaRecorderOptions(options)
-			.setTimeSlice(option.timeSlice);
+			.setTimeSlice(option?.timeSlice);
 
 		return this;
 	}
