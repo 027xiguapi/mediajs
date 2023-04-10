@@ -548,6 +548,28 @@ class Media extends EventTarget {
 	_isTypeSupported(mimeType: string): boolean {
 		return MediaRecorder.isTypeSupported(mimeType);
 	}
+
+	getVideoTracks(stream?: MediaStream): MediaStreamTrack[] {
+		stream = stream || this.medisStream;
+		return stream.getVideoTracks();
+	}
+
+	connectVideo(video: HTMLVideoElement) {
+		video.srcObject = this.medisStream;
+		return this;
+	}
+
+	connectAudio(audio: HTMLAudioElement) {
+		audio.srcObject = this.medisStream;
+		return this;
+	}
+
+	snapshot(canvas: HTMLCanvasElement, video: HTMLVideoElement) {
+		canvas.width = video.videoWidth;
+		canvas.height = video.videoHeight;
+		canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+		return this;
+	}
 }
 
 export { Media };

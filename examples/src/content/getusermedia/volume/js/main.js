@@ -8,94 +8,96 @@
 
 /* global AudioContext, SoundMeter */
 
-'use strict';
+"use strict";
 
-const startButton = document.getElementById('startButton');
-const stopButton = document.getElementById('stopButton');
+const startButton = document.getElementById("startButton");
+const stopButton = document.getElementById("stopButton");
 startButton.onclick = start;
 stopButton.onclick = stop;
 
-const instantMeter = document.querySelector('#instant meter');
-const slowMeter = document.querySelector('#slow meter');
-const clipMeter = document.querySelector('#clip meter');
+const instantMeter = document.querySelector("#instant meter");
+const slowMeter = document.querySelector("#slow meter");
+const clipMeter = document.querySelector("#clip meter");
 
-const instantValueDisplay = document.querySelector('#instant .value');
-const slowValueDisplay = document.querySelector('#slow .value');
-const clipValueDisplay = document.querySelector('#clip .value');
+const instantValueDisplay = document.querySelector("#instant .value");
+const slowValueDisplay = document.querySelector("#slow .value");
+const clipValueDisplay = document.querySelector("#clip .value");
 
 // Put variables in global scope to make them available to the browser console.
-const constraints = window.constraints = {
-  audio: true,
-  video: false
-};
+const constraints = (window.constraints = {
+	audio: true,
+	video: false,
+});
 
 let meterRefresh = null;
 
 function handleSuccess(stream) {
-  // Put variables in global scope to make them available to the
-  // browser console.
-  window.stream = stream;
-  const soundMeter = window.soundMeter = new SoundMeter(window.audioContext);
-  soundMeter.connectToSource(stream, function (e) {
-    if (e) {
-      alert(e);
-      return;
-    }
-    meterRefresh = setInterval(() => {
-      instantMeter.value = instantValueDisplay.innerText =
-        soundMeter.instant.toFixed(2);
-      slowMeter.value = slowValueDisplay.innerText =
-        soundMeter.slow.toFixed(2);
-      clipMeter.value = clipValueDisplay.innerText =
-        soundMeter.clip;
-    }, 200);
-  });
+	// Put variables in global scope to make them available to the
+	// browser console.
+	window.stream = stream;
+	const soundMeter = (window.soundMeter = new SoundMeter(window.audioContext));
+	soundMeter.connectToSource(stream, function (e) {
+		if (e) {
+			alert(e);
+			return;
+		}
+		meterRefresh = setInterval(() => {
+			instantMeter.value = instantValueDisplay.innerText =
+				soundMeter.instant.toFixed(2);
+			slowMeter.value = slowValueDisplay.innerText = soundMeter.slow.toFixed(2);
+			clipMeter.value = clipValueDisplay.innerText = soundMeter.clip;
+		}, 200);
+	});
 }
 
 function handleError(error) {
-  console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
+	console.log(
+		"navigator.MediaDevices.getUserMedia error: ",
+		error.message,
+		error.name,
+	);
 }
 
-
 async function start() {
-  console.log('Requesting local stream');
-  startButton.disabled = true;
-  stopButton.disabled = false;
+	console.log("Requesting local stream");
+	startButton.disabled = true;
+	stopButton.disabled = false;
 
-  try {
-    window.AudioContext = window.AudioContext || window.webkitAudioContext;
-    window.audioContext = new AudioContext();
-  } catch (e) {
-    alert('Web Audio API not supported.');
-  }
+	try {
+		window.AudioContext = window.AudioContext || window.webkitAudioContext;
+		window.audioContext = new AudioContext();
+	} catch (e) {
+		alert("Web Audio API not supported.");
+	}
 
-  // navigator.mediaDevices
-  //   .getUserMedia(constraints)
-  //   .then(handleSuccess)
-  //   .catch(handleError);
+	// navigator.mediaDevices
+	//   .getUserMedia(constraints)
+	//   .then(handleSuccess)
+	//   .catch(handleError);
 
-  const audio = mediajs.audio(constraints)
-    .oncreate(() => {
-      const stream = audio.getMedisStream();
-      handleSuccess(stream);
-    })
-    .onerror((type, err) => {
-      handleError(err)
-    });
+	const audio = mediajs
+		.audio(constraints)
+		.oncreate(() => {
+			const stream = audio.getMedisStream();
+			handleSuccess(stream);
+		})
+		.onerror((type, err) => {
+			handleError(err);
+		});
 
-  audio.create();
+	audio.create();
 }
 
 function stop() {
-  console.log('Stopping local stream');
-  startButton.disabled = false;
-  stopButton.disabled = true;
+	console.log("Stopping local stream");
+	startButton.disabled = false;
+	stopButton.disabled = true;
 
-  window.stream.getTracks().forEach(track => track.stop());
-  window.soundMeter.stop();
-  window.audioContext.close();
-  clearInterval(meterRefresh);
-  instantMeter.value = instantValueDisplay.innerText = '';
-  slowMeter.value = slowValueDisplay.innerText = '';
-  clipMeter.value = clipValueDisplay.innerText = '';
+	window.stream.getTracks().forEach((track) => track.stop());
+	window.soundMeter.stop();
+	window.audioContext.close();
+	clearInterval(meterRefresh);
+	instantMeter.value = instantValueDisplay.innerText = "";
+	slowMeter.value = slowValueDisplay.innerText = "";
+	clipMeter.value = clipValueDisplay.innerText = "";
 }
