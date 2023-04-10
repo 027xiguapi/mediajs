@@ -83,7 +83,7 @@
 		"prepublishOnly": "npm run build",
 		"format": "prettier --write .",
 		"semantic-release": "semantic-release",
-		"mocha": "mocha --timeout 5000 'examples/en/content/**/test.js'"
+		"mocha": "mocha --timeout 5000 'examples/src/content/**/test.js'"
 	},
 	"devDependencies": {
 		"@parcel/config-default": "^2.8.1",
